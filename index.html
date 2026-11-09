@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Reborn | Repairs & Component Inventory</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        cyanBrand: '#06b6d4'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+        }
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            border: 1px solid rgba(55, 65, 81, 0.6);
+        }
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .dark .tab-btn.active {
+            color: #60a5fa;
+            border-bottom-color: #60a5fa;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-full flex flex-col transition-colors duration-300">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('info')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                        <i class="fa-solid fa-arrows-rotate text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Tech <span class="text-blue-600 dark:text-blue-400">Reborn</span></span>
+                        <span class="block text-[10px] text-gray-500 dark:text-gray-400 font-medium tracking-wider uppercase">Bringing Your Tech Back to Life</span>
+                    </div>
+                </div>
+
+                <!-- Central Navigation Tabs -->
+                <nav class="flex space-x-2 sm:space-x-8">
+                    <button id="tab-btn-info" onclick="switchTab('info')" class="tab-btn active inline-flex items-center px-3 py-4 border-b-2 border-blue-600 dark:border-blue-500 text-sm font-semibold transition-all">
+                        <i class="fa-solid fa-wrench mr-2 text-base"></i>
+                        <span>Services & Info</span>
+                    </button>
+                    <button id="tab-btn-inventory" onclick="switchTab('inventory')" class="tab-btn inline-flex items-center px-3 py-4 border-b-2 border-transparent text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-all">
+                        <i class="fa-solid fa-boxes-stacked mr-2 text-base"></i>
+                        <span>Parts & Inventory</span>
+                    </button>
+                </nav>
+
+                <!-- Action Controls: Dark Mode & Book Fix -->
+                <div class="flex items-center space-x-3">
+                    <button id="theme-toggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                        <i id="theme-toggle-dark-icon" class="fa-solid fa-moon text-lg hidden"></i>
+                        <i id="theme-toggle-light-icon" class="fa-solid fa-sun text-lg hidden"></i>
+                    </button>
+                    <button onclick="openBookingModal()" class="hidden md:inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-md shadow-blue-500/20 transition">
+                        <i class="fa-regular fa-calendar-check mr-2"></i> Request Repair Quote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: ABOUT US & REPAIR INFO -->
+        <section id="tab-content-info" class="space-y-12 animate-fadeIn">
+            <!-- Hero Section -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 text-white p-8 sm:p-12 shadow-2xl">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-4">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> Expert Hardware & Logic Board Specialists
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+                        Bringing Your Tech <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Back to Life.</span>
+                    </h1>
+                    <p class="text-gray-300 text-base sm:text-lg mb-8 leading-relaxed">
+                        We specialize in precision micro-soldering, liquid damage restoration, motherboard repairs, and custom hardware upgrades for laptops, desktops, gaming consoles, and audio equipment.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="openBookingModal()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-white shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+                            <span>Get Repair Estimate</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="switchTab('inventory')" class="px-6 py-3 rounded-xl bg-gray-800/80 hover:bg-gray-700 font-semibold text-white border border-gray-700 transition flex items-center gap-2">
+                            <i class="fa-solid fa-microchip text-blue-400"></i>
+                            <span>Browse Stock & Components</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repair Category Cards Grid -->
+            <div>
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Our Specialized Repair Services</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">Component-level engineering, factory tools, and certified technicians for hardware revival.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Laptops & MacBooks -->
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl group">
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-laptop"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Laptops & MacBooks</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Logic board repair, screen panels, battery renewals, keyboard replacement & thermal re-pasting.</p>
+                        <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>MacBook Pro & Air Chip Repair</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Dell XPS, ThinkPad & Asus Gaming</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Hinge & Housing Repair</li>
+                        </ul>
+                    </div>
+
+                    <!-- Workstations & Gaming PCs -->
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-desktop"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Desktops & GPUs</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Custom PC diagnostics, graphics card VRAM repair, power supply replacement & water cooling fixes.</p>
+                        <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>GPU Chip & Capacitor Soldering</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Custom Water Loop Servicing</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>BIOS & CMOS Flashing</li>
+                        </ul>
+                    </div>
+
+                    <!-- Gaming Consoles -->
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl group">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Gaming Consoles</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">HDMI port replacement, APU liquid metal refresh, disc drive alignment & power IC repairs.</p>
+                        <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>PlayStation 5 & Xbox Series X</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Nintendo Switch Charging IC</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Steam Deck Hardware Fixes</li>
+                        </ul>
+                    </div>
+
+                    <!-- Micro-Soldering & Data Recovery -->
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl group">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Data & Micro-Soldering</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Dead board data extraction, SMD trace repair, liquid damage ultrasonic cleaning & NAND recovery.</p>
+                        <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>SSD & RAID Drive Recovery</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Micro-FPCB & Trace Repair</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Corrosion & Water Decon</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostic Process Step-by-Step -->
+            <div class="glass-card rounded-3xl p-8 sm:p-10">
+                <div class="max-w-2xl mx-auto text-center mb-10">
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Our 4-Step Reborn Process</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Transparent, efficient, and trackable from intake to final quality testing.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white font-bold text-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">1</div>
+                        <h4 class="font-semibold text-base mb-1">Free Inspection</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Bring or ship your gear in. We inspect circuitry and components with zero upfront fee.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white font-bold text-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">2</div>
+                        <h4 class="font-semibold text-base mb-1">Upfront Quote</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">We outline part costs, labor, and exact timelines before starting any hardware work.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white font-bold text-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">3</div>
+                        <h4 class="font-semibold text-base mb-1">Expert Repair</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Certified technicians perform micro-soldering and replace modules with OEM quality parts.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-600 text-white font-bold text-xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/30">4</div>
+                        <h4 class="font-semibold text-base mb-1">90-Day Guarantee</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Rigorous thermal and stress test pass before release, backed by our 90-day warranty.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guarantee Banner -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 flex items-start space-x-4">
+                    <i class="fa-solid fa-stopwatch text-2xl text-blue-600 dark:text-blue-400 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-900 dark:text-white">Fast Turnaround</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Most laptop screen, SSD upgrades, and console HDMI ports completed within 24–48 hours.</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-900/60 flex items-start space-x-4">
+                    <i class="fa-solid fa-shield-halved text-2xl text-cyan-600 dark:text-cyan-400 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-900 dark:text-white">90-Day Guarantee</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">All replacement motherboards, screens, and components carry full warranty protection.</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 flex items-start space-x-4">
+                    <i class="fa-solid fa-hand-holding-dollar text-2xl text-indigo-600 dark:text-indigo-400 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-900 dark:text-white">No Fix, No Fee</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">If we cannot restore functional life to your device or motherboard, you owe nothing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact & Hours Section (No Address, Email, or Phone Number) -->
+            <div class="glass-card rounded-3xl p-8 sm:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Tech Reborn Workshop</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Drop by our workshop during standard operating hours for instant hardware diagnostics, component pickups, or refurbished device inquiries.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-xs tracking-wider uppercase text-gray-400 mb-3">Workshop Operating Hours</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="flex justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                <span>Mon - Fri:</span> <span class="font-medium text-blue-600 dark:text-blue-400">8:30 AM - 7:00 PM</span>
+                            </div>
+                            <div class="flex justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                <span>Saturday:</span> <span class="font-medium text-blue-600 dark:text-blue-400">10:00 AM - 5:00 PM</span>
+                            </div>
+                            <div class="flex justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 col-span-2">
+                                <span>Sunday:</span> <span class="font-medium text-gray-500">Closed (Mail-in Intake Active)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Quick Contact / Message Form (No Email or Phone fields) -->
+                <div class="bg-gray-100/60 dark:bg-gray-800/60 p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-gray-700/60">
+                    <h4 class="font-bold text-lg mb-1">Send a Message</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Have questions regarding a laptop, console, or component repair?</p>
+                    <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Name</label>
+                            <input type="text" required placeholder="Alex Morgan" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Device & Problem</label>
+                            <input type="text" required placeholder="e.g. Dell XPS 15 No Power / PS5 HDMI Port Repair" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Message Details</label>
+                            <textarea rows="3" required placeholder="Describe the symptoms or questions..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-md shadow-blue-500/20">
+                            Submit Repair Inquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- TAB 2: INVENTORY SYSTEM -->
+        <section id="tab-content-inventory" class="hidden space-y-6 animate-fadeIn">
+            <!-- Header & Filter Bar -->
+            <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Parts & Component Inventory</h1>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Search hardware components, replacement parts, tools, and refurbished computers.</p>
+                    </div>
+                    <!-- View Switcher & Add Item Button -->
+                    <div class="flex items-center space-x-3 self-start md:self-auto">
+                        <button onclick="openAddItemModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Add Item</span>
+                        </button>
+                        <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+                            <button id="view-grid-btn" onclick="setViewMode('grid')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-gray-700 shadow text-blue-600 dark:text-blue-400 transition">
+                                <i class="fa-solid fa-grip-vertical mr-1"></i> Grid
+                            </button>
+                            <button id="view-table-btn" onclick="setViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 transition hover:text-gray-900">
+                                <i class="fa-solid fa-list mr-1"></i> Table
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls: Search, Category Filter, Stock Status Filter -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 pt-2">
+                    <!-- Search Input -->
+                    <div class="lg:col-span-5 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                        <input type="text" id="inventory-search" oninput="filterInventory()" placeholder="Search component name, model, SKU..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="lg:col-span-4">
+                        <select id="category-filter" onchange="filterInventory()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="all">All Categories</option>
+                            <option value="Components">Laptop & PC Components</option>
+                            <option value="Refurbished Devices">Refurbished Desktops & Laptops</option>
+                            <option value="Tools">Rework & Soldering Tools</option>
+                            <option value="Accessories">Accessories & Cables</option>
+                        </select>
+                    </div>
+
+                    <!-- Stock Status Filter -->
+                    <div class="lg:col-span-3">
+                        <select id="stock-filter" onchange="filterInventory()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="all">All Stock Status</option>
+                            <option value="In Stock">In Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-2">
+                <div>
+                    Showing <span id="items-count" class="font-bold text-gray-900 dark:text-white">0</span> item(s)
+                </div>
+                <div class="flex space-x-3">
+                    <span class="inline-flex items-center"><span id="stat-in-stock" class="font-bold text-emerald-600 dark:text-emerald-400 mr-1">0</span> <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span> In Stock</span>
+                    <span class="inline-flex items-center"><span id="stat-low-stock" class="font-bold text-amber-600 dark:text-amber-400 mr-1">0</span> <span class="w-2 h-2 rounded-full bg-amber-500 mr-1.5"></span> Low Stock</span>
+                    <span class="inline-flex items-center"><span id="stat-out-stock" class="font-bold text-rose-600 dark:text-rose-400 mr-1">0</span> <span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span> Out of Stock</span>
+                </div>
+            </div>
+
+            <!-- GRID CONTAINER -->
+            <div id="inventory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamically Rendered Grid Cards -->
+            </div>
+
+            <!-- TABLE CONTAINER (Hidden by default) -->
+            <div id="inventory-table-container" class="hidden glass-card rounded-2xl overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100/70 dark:bg-gray-800/70 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                                <th class="py-3.5 px-4">Item & Description</th>
+                                <th class="py-3.5 px-4">Category</th>
+                                <th class="py-3.5 px-4">SKU</th>
+                                <th class="py-3.5 px-4">Stock Status</th>
+                                <th class="py-3.5 px-4">Price</th>
+                                <th class="py-3.5 px-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-gray-200 dark:divide-gray-800 text-sm">
+                            <!-- Dynamically Rendered Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="no-results" class="hidden glass-card rounded-3xl p-12 text-center">
+                <div class="w-16 h-16 mx-auto rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 flex items-center justify-center text-2xl mb-4">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-1">No Components Found</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-4">We couldn't find any items matching your current filters or search query.</p>
+                <button onclick="resetFilters()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition">
+                    Reset All Filters
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2 text-sm font-semibold">
+                <div class="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                <span>Tech Reborn Workshop</span>
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
+                &copy; 2026 Tech Reborn Systems. All hardware parts are test-certified.
+            </div>
+            <div class="flex space-x-4 text-gray-400 text-base">
+                <a href="#" class="hover:text-blue-500 transition"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-blue-500 transition"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-blue-500 transition"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL: Booking / Repair Inquiry -->
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden animate-fadeIn">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold">Request Repair Quote</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Get a diagnostic estimate for your laptop, desktop, or console.</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleBookingSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Your Name</label>
+                    <input type="text" required placeholder="Alex Morgan" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Hardware Category</label>
+                    <select required class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="laptop">Laptop / MacBook</option>
+                        <option value="desktop">Desktop PC / Workstation</option>
+                        <option value="console">Gaming Console</option>
+                        <option value="audio">Audio Equipment / Amp</option>
+                        <option value="data">Data Recovery</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Issue Description</label>
+                    <textarea rows="3" required placeholder="Detail the fault e.g., liquid damage, no display, cracked laptop screen..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shadow-blue-500/25 mt-2">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Add New Inventory Item -->
+    <div id="add-item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden animate-fadeIn">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAddItemModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-box-archive"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold">Add New Hardware Item</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Add a replacement part, tool, or refurbished computer to stock.</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleAddItemSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Item Title</label>
+                    <input type="text" id="new-item-name" required placeholder="e.g. 15.6 Inch Full HD IPS Laptop Panel" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Category</label>
+                        <select id="new-item-category" required class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option value="Components">Components</option>
+                            <option value="Refurbished Devices">Refurbished Devices</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">SKU</label>
+                        <input type="text" id="new-item-sku" required placeholder="e.g. COMP-LAP-PANEL" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Price ($)</label>
+                        <input type="number" step="0.01" id="new-item-price" required placeholder="89.99" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Stock Count</label>
+                        <input type="number" id="new-item-stock" required min="0" placeholder="10" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Image URL (Optional)</label>
+                    <input type="url" id="new-item-image" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Description</label>
+                    <textarea id="new-item-desc" rows="2" required placeholder="Short description of the item..." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition shadow-lg shadow-emerald-500/25 mt-2">
+                    Save New Inventory Item
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Remove Confirmation -->
+    <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden animate-fadeIn">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative">
+            <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl mx-auto mb-4">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 class="text-base font-bold mb-1">Remove Inventory Item?</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to remove <span id="delete-item-name-display" class="font-semibold text-gray-800 dark:text-gray-200">this item</span> from stock?</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    Cancel
+                </button>
+                <button id="confirm-delete-btn" onclick="confirmDelete()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-md shadow-rose-600/20 transition">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-gray-900 text-white border border-gray-700 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-3">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Action completed successfully.</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Sample Inventory Data Set - Initialized empty
+        let inventoryData = [];
+
+        let currentViewMode = 'grid';
+        let itemToDeleteId = null;
+
+        // Initialize Theme & Tabs on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateInventoryStats();
+            filterInventory();
+        });
+
+        // Update Stock Status Statistics
+        function updateInventoryStats() {
+            const inStock = inventoryData.filter(i => i.status === 'In Stock').length;
+            const lowStock = inventoryData.filter(i => i.status === 'Low Stock').length;
+            const outStock = inventoryData.filter(i => i.status === 'Out of Stock').length;
+
+            document.getElementById('stat-in-stock').textContent = inStock;
+            document.getElementById('stat-low-stock').textContent = lowStock;
+            document.getElementById('stat-out-stock').textContent = outStock;
+        }
+
+        // Dynamic Tab Switcher Logic
+        function switchTab(tabName) {
+            const infoTab = document.getElementById('tab-content-info');
+            const inventoryTab = document.getElementById('tab-content-inventory');
+            const btnInfo = document.getElementById('tab-btn-info');
+            const btnInventory = document.getElementById('tab-btn-inventory');
+
+            if (tabName === 'info') {
+                infoTab.classList.remove('hidden');
+                inventoryTab.classList.add('hidden');
+                
+                btnInfo.classList.add('active', 'border-blue-600', 'dark:border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                btnInfo.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+
+                btnInventory.classList.remove('active', 'border-blue-600', 'dark:border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                btnInventory.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            } else {
+                inventoryTab.classList.remove('hidden');
+                infoTab.classList.add('hidden');
+
+                btnInventory.classList.add('active', 'border-blue-600', 'dark:border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                btnInventory.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+
+                btnInfo.classList.remove('active', 'border-blue-600', 'dark:border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                btnInfo.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // View Mode Switch (Grid vs Table)
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const gridEl = document.getElementById('inventory-grid');
+            const tableEl = document.getElementById('inventory-table-container');
+            const gridBtn = document.getElementById('view-grid-btn');
+            const tableBtn = document.getElementById('view-table-btn');
+
+            if (mode === 'grid') {
+                gridEl.classList.remove('hidden');
+                tableEl.classList.add('hidden');
+                
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-gray-700 shadow text-blue-600 dark:text-blue-400 transition";
+                tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 transition hover:text-gray-900";
+            } else {
+                gridEl.classList.add('hidden');
+                tableEl.classList.remove('hidden');
+
+                tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-gray-700 shadow text-blue-600 dark:text-blue-400 transition";
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 transition hover:text-gray-900";
+            }
+        }
+
+        // Render Inventory Function
+        function renderInventory(items) {
+            const gridContainer = document.getElementById('inventory-grid');
+            const tableBody = document.getElementById('inventory-table-body');
+            const countEl = document.getElementById('items-count');
+            const noResultsEl = document.getElementById('no-results');
+
+            countEl.textContent = items.length;
+
+            if (items.length === 0) {
+                gridContainer.innerHTML = '';
+                tableBody.innerHTML = '';
+                noResultsEl.classList.remove('hidden');
+                return;
+            } else {
+                noResultsEl.classList.add('hidden');
+            }
+
+            // Render Cards Grid
+            gridContainer.innerHTML = items.map(item => `
+                <div class="glass-card rounded-2xl overflow-hidden flex flex-col transition duration-300 hover:shadow-xl hover:-translate-y-1 relative group">
+                    <div class="relative h-48 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                        <img src="${item.image || 'https://placehold.co/400x300/1e293b/ffffff?text=Tech+Part'}" alt="${item.name}" class="w-full h-full object-cover transition duration-500 hover:scale-105" onerror="this.src='https://placehold.co/400x300/1e293b/ffffff?text=Tech+Part'">
+                        <div class="absolute top-3 right-3 flex items-center space-x-1.5">
+                            ${getStatusBadge(item.status)}
+                            <button onclick="promptDeleteItem('${item.id}', '${escapeHtml(item.name)}')" title="Remove Item" class="w-7 h-7 rounded-full bg-rose-600/90 hover:bg-rose-600 text-white flex items-center justify-center text-xs shadow-md backdrop-blur-md transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-mono text-white">
+                            ${item.sku}
+                        </div>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">${item.category}</span>
+                            <h3 class="font-bold text-base mt-1 line-clamp-1">${item.name}</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">${item.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-400 block">Unit Price</span>
+                                <span class="text-lg font-extrabold text-gray-900 dark:text-white">$${Number(item.price).toFixed(2)}</span>
+                            </div>
+                            <button onclick="orderPart('${escapeHtml(item.name)}')" ${item.status === 'Out of Stock' ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl text-xs font-semibold ${item.status === 'Out of Stock' ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20'} transition">
+                                ${item.status === 'Out of Stock' ? 'Unavailable' : '<i class="fa-solid fa-cart-plus mr-1"></i> Reserve'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Table Rows
+            tableBody.innerHTML = items.map(item => `
+                <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-gray-900 dark:text-white">${item.name}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">${item.desc}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs font-medium">${item.category}</td>
+                    <td class="py-3.5 px-4 font-mono text-xs text-gray-500">${item.sku}</td>
+                    <td class="py-3.5 px-4">${getStatusBadge(item.status)}</td>
+                    <td class="py-3.5 px-4 font-bold text-gray-900 dark:text-white">$${Number(item.price).toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right">
+                        <div class="flex items-center justify-end space-x-2">
+                            <button onclick="orderPart('${escapeHtml(item.name)}')" ${item.status === 'Out of Stock' ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-medium ${item.status === 'Out of Stock' ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'} transition">
+                                Reserve
+                            </button>
+                            <button onclick="promptDeleteItem('${item.id}', '${escapeHtml(item.name)}')" title="Remove Item" class="p-1.5 rounded-lg text-xs bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/60 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-400 transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // Deletion Modals & Logic
+        function promptDeleteItem(id, itemName) {
+            itemToDeleteId = id;
+            document.getElementById('delete-item-name-display').textContent = itemName;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            itemToDeleteId = null;
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            if (!itemToDeleteId) return;
+
+            const deletedItem = inventoryData.find(i => i.id === itemToDeleteId);
+            inventoryData = inventoryData.filter(i => i.id !== itemToDeleteId);
+
+            closeDeleteModal();
+            updateInventoryStats();
+            filterInventory();
+            showToast(`Removed "${deletedItem ? deletedItem.name : 'Item'}" from inventory.`);
+        }
+
+        // Add Item Modal & Logic
+        function openAddItemModal() {
+            document.getElementById('add-item-modal').classList.remove('hidden');
+        }
+
+        function closeAddItemModal() {
+            document.getElementById('add-item-modal').classList.add('hidden');
+        }
+
+        function handleAddItemSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('new-item-name').value.trim();
+            const category = document.getElementById('new-item-category').value;
+            const sku = document.getElementById('new-item-sku').value.trim();
+            const price = parseFloat(document.getElementById('new-item-price').value);
+            const stock = parseInt(document.getElementById('new-item-stock').value, 10);
+            const image = document.getElementById('new-item-image').value.trim();
+            const desc = document.getElementById('new-item-desc').value.trim();
+
+            let status = 'In Stock';
+            if (stock === 0) status = 'Out of Stock';
+            else if (stock <= 3) status = 'Low Stock';
+
+            const newItem = {
+                id: 'INV-' + Math.floor(100 + Math.random() * 900),
+                name,
+                category,
+                sku,
+                price,
+                stock,
+                status,
+                image: image || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80',
+                desc
+            };
+
+            inventoryData.unshift(newItem);
+
+            e.target.reset();
+            closeAddItemModal();
+            updateInventoryStats();
+            filterInventory();
+            showToast(`Successfully added "${name}" to inventory.`);
+        }
+
+        // Helper: Stock Badge Generator
+        function getStatusBadge(status) {
+            if (status === 'In Stock') {
+                return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-300/50"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>In Stock</span>`;
+            } else if (status === 'Low Stock') {
+                return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border border-amber-300/50"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>Low Stock</span>`;
+            } else {
+                return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-400 border border-rose-300/50"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>Out of Stock</span>`;
+            }
+        }
+
+        // Filter Logic for Search & Dropdowns
+        function filterInventory() {
+            const searchVal = document.getElementById('inventory-search').value.toLowerCase();
+            const categoryVal = document.getElementById('category-filter').value;
+            const stockVal = document.getElementById('stock-filter').value;
+
+            const filtered = inventoryData.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchVal) || 
+                                      item.sku.toLowerCase().includes(searchVal) ||
+                                      item.desc.toLowerCase().includes(searchVal);
+                
+                const matchesCategory = categoryVal === 'all' || item.category === categoryVal;
+                const matchesStock = stockVal === 'all' || item.status === stockVal;
+
+                return matchesSearch && matchesCategory && matchesStock;
+            });
+
+            renderInventory(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('inventory-search').value = '';
+            document.getElementById('category-filter').value = 'all';
+            document.getElementById('stock-filter').value = 'all';
+            renderInventory(inventoryData);
+        }
+
+        // Modal Handlers
+        function openBookingModal() {
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+        }
+
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+            closeBookingModal();
+            showToast('Diagnostic appointment request submitted! We will contact you shortly.');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('Message sent! Our tech team will reply within 2 hours.');
+        }
+
+        function orderPart(itemName) {
+            showToast(`Reserved 1x "${itemName}". Check holding bay at shop desk.`);
+        }
+
+        // Custom Toast Notification System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Dark/Light Theme Switcher Logic
+        function initTheme() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                lightIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                darkIcon.classList.remove('hidden');
+            }
+
+            themeToggleBtn.addEventListener('click', function() {
+                darkIcon.classList.toggle('hidden');
+                lightIcon.classList.toggle('hidden');
+
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
+                } else {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
